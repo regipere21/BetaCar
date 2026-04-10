@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BetaCar – Find Your Car</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --orange: #F05A28;
+  --orange-light: #FF7A47;
+  --navy: #0D1B3E;
+  --navy-mid: #152450;
+  --navy-light: #1E3366;
+  --white: #FFFFFF;
+  --gray: #F4F5F7;
+  --text-muted: #8A94A6;
+  --border: rgba(255,255,255,0.08);
+}
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--navy);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  overflow: auto;
+}
+
+/* Background effects */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(240,90,40,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -150px; left: -150px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(30,51,102,0.8) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Grid overlay */
+.grid-bg {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 980px;
+  padding: 20px;
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  animation: fadeUp 0.7s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* LEFT PANEL */
+.left-panel {
+  background: var(--orange);
+  padding: 52px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.left-panel::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+.left-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.1);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative; z-index: 2;
+}
+
+.brand-icon {
+  width: 44px; height: 44px;
+  background: var(--white);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--orange);
+  letter-spacing: -1px;
+}
+
+.brand-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.5px;
+}
+.brand-name span { font-weight: 300; }
+
+.left-content { position: relative; z-index: 2; }
+
+.left-content h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.0;
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+
+.left-content h1 em {
+  font-style: normal;
+  color: rgba(255,255,255,0.3);
+}
+
+.left-content p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.6;
+  max-width: 260px;
+}
+
+.stats {
+  display: flex;
+  gap: 24px;
+  position: relative; z-index: 2;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.stat-divider {
+  width: 1px;
+  background: rgba(255,255,255,0.2);
+  align-self: stretch;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  background: var(--navy-mid);
+  padding: 52px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-header {
+  margin-bottom: 32px;
+}
+
+.form-label-tag {
+  display: inline-block;
+  background: rgba(240,90,40,0.15);
+  border: 1px solid rgba(240,90,40,0.3);
+  color: var(--orange-light);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+
+.form-header h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.form-header p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+}
+
+input, select, textarea {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: var(--white);
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255,255,255,0.2);
+}
+
+select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A94A6' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+select option { background: var(--navy-mid); color: var(--white); }
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--orange);
+  background: rgba(240,90,40,0.06);
+  box-shadow: 0 0 0 3px rgba(240,90,40,0.1);
+}
+
+textarea { resize: none; height: 80px; }
+
+.submit-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 16px;
+  background: var(--orange);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 8px 24px rgba(240,90,40,0.35);
+}
+
+.submit-btn:hover {
+  background: var(--orange-light);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgba(240,90,40,0.45);
+}
+
+.submit-btn:active { transform: translateY(1px); }
+
+.submit-btn .btn-arrow {
+  display: inline-block;
+  margin-left: 8px;
+  transition: transform 0.2s;
+}
+
+.submit-btn:hover .btn-arrow { transform: translateX(4px); }
+
+.trust-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  justify-content: center;
+}
+
+.trust-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #3DDC97;
+}
+
+.trust-text {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* SUCCESS STATE */
+.success-overlay {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  height: 100%;
+}
+
+.success-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(61,220,151,0.15);
+  border: 2px solid #3DDC97;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin-bottom: 20px;
+  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.success-overlay h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+
+.success-overlay p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.response-badge {
+  margin-top: 20px;
+  background: rgba(240,90,40,0.12);
+  border: 1px solid rgba(240,90,40,0.25);
+  border-radius: 30px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--orange-light);
+}
+
+@media (max-width: 700px) {
+  .wrapper { grid-template-columns: 1fr; }
+  .left-panel { padding: 36px 28px; }
+  .left-content h1 { font-size: 36px; }
+  .right-panel { padding: 36px 28px; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="wrapper">
+    <!-- LEFT -->
+    <div class="left-panel">
+      <div class="brand">
+        <div class="brand-icon">β</div>
+        <div class="brand-name"><span>beta</span>car</div>
+      </div>
+
+```
+  <div class="left-content">
+    <h1>Your Next Car<br/><em>Starts</em><br/>Here.</h1>
+    <p>Fill out the form and one of our specialists will reach out to you within <strong style="color:#fff">5 minutes</strong> with your best options.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-num">5k+</span>
+      <span class="stat-label">Cars Available</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num">100%</span>
+      <span class="stat-label">Quality Certified</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num">30%</span>
+      <span class="stat-label">Down Payment</span>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel" id="rightPanel">
+  <div id="formSection">
+    <div class="form-header">
+      <span class="form-label-tag">⚡ Instant Response</span>
+      <h2>Get a Free<br/>Car Consultation</h2>
+      <p>No spam. Our team responds in under 5 minutes.</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" id="firstName" placeholder="e.g. Chukwuemeka" />
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" id="lastName" placeholder="e.g. Okonkwo" />
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="e.g. 08012345678" />
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="you@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Car Type</label>
+        <select id="carType">
+          <option value="" disabled selected>Select type</option>
+          <option>Sedan</option>
+          <option>SUV</option>
+          <option>Utility / Pickup</option>
+          <option>Family Car</option>
+          <option>Convertible</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Budget Range</label>
+        <select id="budget">
+          <option value="" disabled selected>Select budget</option>
+          <option>Below ₦3 Million</option>
+          <option>₦3M – ₦6M</option>
+          <option>₦6M – ₦12M</option>
+          <option>₦12M – ₦20M</option>
+          <option>Above ₦20M</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Additional Notes (optional)</label>
+        <textarea id="notes" placeholder="e.g. Looking for a foreign used Toyota Camry, automatic, 2019 or newer..."></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="handleSubmit()">
+      Get My Free Consultation <span class="btn-arrow">→</span>
+    </button>
+
+    <div class="trust-row">
+      <div class="trust-dot"></div>
+      <span class="trust-text">A specialist will call you within 5 minutes of submitting</span>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-overlay" id="successSection">
+    <div class="success-icon">✓</div>
+    <h3>You're All Set!</h3>
+    <p>Thanks <strong id="successName" style="color:#fff"></strong>! Your inquiry has been received.<br/>A BetaCar specialist will call you shortly.</p>
+    <div class="response-badge">⚡ Average response time: 4 minutes</div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <script>
+    function handleSubmit() {
+      const first = document.getElementById('firstName').value.trim();
+      const last = document.getElementById('lastName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const carType = document.getElementById('carType').value;
+      const budget = document.getElementById('budget').value;
+
+      if (!first || !phone || !carType || !budget) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+
+      document.getElementById('formSection').style.display = 'none';
+      const success = document.getElementById('successSection');
+      success.style.display = 'flex';
+      document.getElementById('successName').textContent = first + (last ? ' ' + last : '');
+    }
+  </script>
+
+</body>
+</html>
